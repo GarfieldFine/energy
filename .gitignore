@@ -1,0 +1,76 @@
+# ── 密钥与环境变量（切勿提交）──
+.env
+.env.*
+!.env.example
+!.env.docker.example
+backend/.env
+frontend/.env.local
+frontend/.env.*.local
+
+# ── Python ──
+__pycache__/
+*.py[cod]
+*$py.class
+*.egg-info/
+.venv/
+venv/
+.pytest_cache/
+.mypy_cache/
+.ruff_cache/
+.coverage
+htmlcov/
+
+# ── Node / 前端构建产物 ──
+frontend/node_modules/
+frontend/dist/
+frontend/.vite/
+frontend_test/node_modules/
+node_modules/
+.pnpm-store/
+
+# ── 本地运行时数据（需自行准备或上传）──
+backend/data/imported/
+backend/data/uploads/
+backend/data/*.sqlite
+backend/data/*.db
+backend/out.json
+*.sqlite
+*.sqlite3
+
+# ── 模型权重与推理缓存（pip/ultralytics 首次运行自动下载）──
+*.pt
+*.pth
+*.onnx
+*.safetensors
+weights/
+runs/
+.ultralytics/
+
+# ── 大型外部数据集与语料（见 START.txt 配置路径）──
+*.csv
+sft_merged/
+kb_documents/
+bdg_cleaned_output/
+
+# ── 上传临时文件 ──
+uploads/
+temp/
+tmp/
+backend/tmp_*
+_mobile_layout_snip.txt
+
+# ── 日志与系统文件 ──
+*.log
+npm-debug.log*
+.DS_Store
+Thumbs.db
+.idea/
+.vscode/
+!.vscode/extensions.json
+
+# ── Office 临时文件 ──
+~$*.docx
+~$*.pptx
+
+# ── 微信小程序本地开发者配置（可选）──
+miniprogram/project.private.config.json
