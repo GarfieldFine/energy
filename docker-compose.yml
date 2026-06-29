@@ -1,0 +1,28 @@
+# 一键启动：在 building_energy_system 目录执行
+#   docker compose up --build -d
+# 浏览器访问 http://localhost:8080
+# 说明：请先将 backend/.env.example 复制为 backend/.env 并按说明填写；
+#       将能耗等 CSV 放入 backend/data/imported/ 或使用「系统管理」页上传。
+
+services:
+  api:
+    build:
+      context: ./backend
+      dockerfile: Dockerfile
+    ports:
+      - "8765:8765"
+    env_file:
+      - ./backend/.env
+    volumes:
+      - ./backend/data:/app/data
+    restart: unless-stopped
+
+  web:
+    build:
+      context: ./frontend
+      dockerfile: Dockerfile
+    ports:
+      - "8080:80"
+    depends_on:
+      - api
+    restart: unless-stopped

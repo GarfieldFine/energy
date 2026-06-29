@@ -1,112 +1,50 @@
-建筑能源演示系统 — 启动说明（赛题 A08 对齐）
-============================================
+智维衡碳 — 建筑能源智能管理系统 · 快速启动
+==========================================
 
-【文档】
-- 源码文档（精简版，创新训练/结题提交）：building_energy_system\docs\SOURCE_CODE_DOCUMENT.md
-- PPT 6.5 文本提取（对照用）：building_energy_system\docs\_ppt_extract_6.5.txt
-- 答辩评委问答速查：building_energy_system\docs\MODULE_TECH_IMPLEMENTATION.md
-- 痛点—技术—新闭环（路演/PPT）：building_energy_system\docs\PAIN_POINT_CLOSURE.md
-- 业务模式与商业模式分析：building_energy_system\docs\BUSINESS_AND_COMMERCIAL_MODEL.md
-- 会员套餐页（前端）：侧栏「产品与收费」/pricing，四档 Andante–Allegro，见 frontend\src\data\pricingPlans.js
-- 前端对接（全量 API、fetch 示例、赛题对照表）：building_energy_system\docs\API_FRONTEND.md
-- 最终用户操作说明：building_energy_system\docs\USER_MANUAL.md
-- 契约：浏览器打开后端 /docs 或 GET /openapi.json
+【一、数据准备】
+  与 building_energy_system 同级放置：
+  · bdg_cleaned_output\          能耗 / 元数据 / 字典 CSV
+  · kb_documents\ 或 知识库所需文档\   规范 PDF（索引后用于问答）
+  · sft_merged\sikong_sft_all.jsonl   司空语料（可选）
 
-============================================
+【二、启动】
+  1) 后端（默认 8765）
+     cd building_energy_system\backend
+     pip install -r requirements.txt
+     python -m uvicorn app.main:app --reload --host 127.0.0.1 --port 8765
+     文档 http://127.0.0.1:8765/docs
 
-【数据集（相对路径，与仓库并列即可）】
-1) BDG 清洗能耗：bdg_cleaned_output\（与 building_energy_system 同级）
-2) 规范 PDF 知识库：优先 building_energy_system\kb_documents\，否则工作区根下 kb_documents\ 或 知识库所需文档\
-   将 PDF 放入上述任一目录后运行索引脚本（见下）。环境变量 KB_ROOT 可强制指定目录。
-3) 司空合并语料 sikong_sft_all.jsonl：优先 …\BDG数据集\sft_merged\，其次 building_energy_system\sft_merged\
-   若需从原始 JSON 重新合并：
-     python <BDG数据集>\merge_sikong_sft.py
-   原始 JSON 默认目录为 <BDG数据集>\司空大模型\（可用 SIKONG_SRC_DIR / SIKONG_OUT_DIR 覆盖）。
-   后端读取路径可用环境变量 SIKONG_JSONL 覆盖。
+  2) 前端
+     cd building_energy_system\frontend
+     npm install
+     npm run dev
+     浏览器打开终端地址（通常 http://127.0.0.1:5173）
 
-【赛题能力对照（后端已实现）】
-- （1）数据层：能耗/元数据/字典 CSV 路径可配；**POST /api/admin/dataset/upload-*** 上传至 data/imported/ 优先生效；GET /api/admin/dataset/import-status；POST /api/admin/reload 重载；POST /api/admin/kb/reindex 重建 PDF 索引。
-- （2）查询统计：GET /api/energy/records；时段汇总 /stats/period、COP 演示 /stats/cop-proxy、异常 /stats/anomalies；/stats/timeseries；报表 /stats/export/csv。
-- （3）智慧运维：POST /api/assistant/rag-answer（PDF+司空+数据字典+运维摘要+可选 LLM）；GET /api/assistant/llm-status。LLM 见 backend/.env.example 中 LLM_*。
-- （4）集成：正式前端「能源仪表盘」含赛题能力导航；GET /api/mcp/tools；MCP stdio：python -m app.mcp_server；V2：/v2/vision/upload、/v2/twin/scene 等见 docs。
+  3) 知识库索引（PDF 变更后执行一次）
+     cd building_energy_system\backend
+     python scripts\ingest_kb.py
 
-【命令】
-1) 知识库索引（PDF 变更后）
-   cd d:\BDG数据集\building_energy_system\backend
-   python scripts\ingest_kb.py
+【三、演示账号】
+  admin / admin123     全部菜单 + 平台运维
+  energy / energy123   能源分析、工单只读
+  ops / ops123         问答、工单、孪生、数据大屏
+  关闭登录：backend\.env 设 AUTH_ENABLED=false 后重启后端
 
-2) 后端（默认 8765，避免 Windows 占 8000）
-   cd d:\BDG数据集\building_energy_system\backend
-   python -m uvicorn app.main:app --reload --host 127.0.0.1 --port 8765
-   python -m uvicorn app.main:app --reload --host 0.0.0.0 --port 8765
-   文档: http://127.0.0.1:8765/docs
-   【手机 / 小程序联调】改用 --host 0.0.0.0，手机访问 http://<电脑IP>:8765/health
-   若 uvicorn 报 WinError 10013（端口被拒绝）：换端口再试，例如
-     python -m uvicorn app.main:app --reload --host 127.0.0.1 --port 18888
-   浏览器打开 http://127.0.0.1:18888/api 应返回 JSON（含 examples），不是 {"detail":"Not Found"}。
+【四、能耗实时对接（可选）】
+  在 backend\.env 配置：
+    ENERGY_API_URL=http://外部能耗接口
+    ENERGY_SYNC_INTERVAL_SEC=300
+  后端启动后自动拉取合并；平台运维页可「立即同步」。
+  本地联调：python scripts\mock_energy_api.py → URL 填 http://127.0.0.1:9876/energy/latest
 
-3) 正式前端（Vue + Vite）
-   首次安装依赖：
-   cd d:\BDG数据集\building_energy_system\frontend
-   npm install
+【五、其它】
+  · 配置模板：backend\.env.example（LLM、百度语音、高德等）
+  · Docker：docker compose up --build -d → http://localhost:8080
+  · 小程序：miniprogram\（运维移动端，见 docs\USER_MANUAL.md） python -m uvicorn app.main:app --reload --host 0.0.0.0 --port 8765
+  · API 契约：/docs 或 GET /api
+  · 详细文档：docs\SOURCE_CODE_DOCUMENT.md、docs\USER_MANUAL.md、docs\API_FRONTEND.md
 
-   开发启动（推荐）：
-   npm run dev
-   浏览器访问终端输出地址（通常 http://127.0.0.1:5173）
-   默认通过 Vite 代理转发 /api 到 http://127.0.0.1:8765
-   【实习版登录】打开后会进入登录页，演示账号：
-     admin / admin123   — 系统管理员（全部菜单 + 系统管理）
-     energy / energy123 — 能源管理员（仪表盘/统计/对标/报告，工单只读）
-     ops / ops123       — 运维工程师（问答/工单/孪生/数据大屏，无能源仪表盘与系统管理）
-   关闭鉴权：backend\.env 设 AUTH_ENABLED=false 后重启后端
-   移动端请使用下方微信小程序（已移除 H5 移动孪生页）
-
-5) 微信小程序 · 智慧运维（运维工程师移动端）
-   目录：building_energy_system\miniprogram\
-   功能：工单处置 · 知识问答 · 现场孪生分析（底栏「我的」为账号与服务配置）
-   账号：运维工程师专用（role=ops）；需 backend 开启 AUTH_ENABLED=true
-   部署：在「我的 → 服务地址」填入平台访问地址，检测连通后登录
-   开发者联调说明见 docs/USER_MANUAL.md；本地调试需微信开发者工具勾选「不校验合法域名」
-
-6) Docker 一键启动（API + 网页，需已安装 Docker）
-   在 building_energy_system 目录：
-   - 将 backend\.env.docker.example 复制为 backend\.env，并把 CSV 等放入 backend\data\imported\（见 docs\USER_MANUAL.md）
-   - 执行：docker compose up --build -d
-   - 浏览器访问 http://localhost:8080  （后端直连仍为 http://127.0.0.1:8765）
-
-   若你习惯从 frontend_test 目录启动（兼容入口）：
-   cd d:\BDG数据集\building_energy_system\frontend_test
-   npm start
-   该命令会自动转发到 ../frontend 的 dev 启动。
-
-【若出现 {"detail":"Not Found"}】
-- 多半是后端未在本机成功监听，或前端代理目标与后端端口不一致。
-- 先单独打开后端文档页：与 uvicorn 端口一致，例如 http://127.0.0.1:18888/docs
-- 再访问同端口的 http://127.0.0.1:18888/api ；能访问则说明 API 正常，再检查 BACKEND_URL。
-
-环境变量：ENERGY_CSV、METADATA_CSV、DATA_DICTIONARY_CSV、KB_ROOT、KB_INDEX_DB、SIKONG_JSONL；
-清洗脚本 BDG_DATA_DIR、BDG_OUT_DIR；合并脚本 SIKONG_SRC_DIR、SIKONG_OUT_DIR。
-
-【LLM 智能问答（可选）】
-后端会读取 building_energy_system\backend\.env（若存在）。快速步骤：
-1) 安装依赖（含 python-dotenv）：
-   cd d:\BDG数据集\building_energy_system\backend
-   pip install -r requirements.txt
-2) 编辑 backend\.env（可用 copy .env.example .env 从零开始）：
-   - 阿里云百炼 · 通义千问（OpenAI 兼容，推荐）：
-     控制台 https://bailian.console.aliyun.com 创建 API-KEY 后填入：
-       LLM_API_BASE=https://dashscope.aliyuncs.com/compatible-mode/v1
-       LLM_API_KEY=你的密钥
-       LLM_MODEL=qwen-plus
-     （模型名以百炼文档为准，如 qwen-turbo、qwen-max 等）
-   - 本机 Ollama：安装 https://ollama.com ，终端 ollama pull 模型名 后：
-       LLM_API_BASE=http://127.0.0.1:11434/v1
-       LLM_MODEL=qwen2.5:7b
-       LLM_API_KEY 可留空
-3) 重启 uvicorn 后，浏览器打开 GET /api/assistant/llm-status 或 前端「智能问答」页顶栏应显示「LLM 已配置」。
-也可用系统环境变量覆盖（不建 .env 时）：LLM_API_BASE、LLM_API_KEY（百炼必填）、LLM_MODEL、LLM_TIMEOUT_SEC。
-
-【百炼常见误解】
-- 不需要「自己部署模型」：有 API-KEY 即可，在 .env 里写对 LLM_MODEL（如 qwen-turbo、qwen-plus），请求里会指定模型名。
-- 若仍失败：看后端终端或前端返回里的「LLM HTTP」全文；常见为密钥错误、模型名与控制台不一致、账号未开通/欠费、地域 URL 选错（国内一般用北京 base）。
-- 可先改 LLM_MODEL=qwen-turbo 试通，再换其它模型。
+【排错】
+  · {"detail":"Not Found"} → 确认后端已启动且端口与前端代理一致
+  · WinError 10013 → 换端口，如 --port 18888
+  · LLM 未配置 → 复制 .env.example 为 .env，填入 LLM_API_KEY 后重启

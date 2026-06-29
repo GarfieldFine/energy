@@ -80,12 +80,15 @@ async def auth_gate_middleware(request: Request, call_next: Callable) -> Respons
         if role != "admin":
             return _forbidden("仅系统管理员可访问管理接口")
 
-    if path.startswith(f"{prefix}/incidents") and method in {"POST", "PATCH", "DELETE"}:
+    if path.startswith(f"{prefix}/incidents") and method == "POST":
+        if role not in {"admin", "ops", "requester"}:
+            return _forbidden("无权限创建工单")
+    elif path.startswith(f"{prefix}/incidents") and method in {"PATCH", "DELETE"}:
         if role not in {"admin", "ops"}:
             return _forbidden("仅运维工程师或管理员可修改工单")
 
     if path.startswith(f"{prefix}/v2/") and method == "POST":
-        if role not in {"admin", "ops"}:
-            return _forbidden("仅运维工程师或管理员可执行现场识别等写操作")
+        if role not in {"admin", "ops", "requester"}:
+            return _forbidden("无权限执行现场识别等写操作")
 
     return await call_next(request)

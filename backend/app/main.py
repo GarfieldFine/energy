@@ -1,5 +1,6 @@
 from __future__ import annotations
 
+from contextlib import asynccontextmanager
 from typing import Any
 
 from fastapi import FastAPI, Request
@@ -10,12 +11,22 @@ from starlette.exceptions import HTTPException as StarletteHTTPException
 
 from app.config import settings
 from app.middleware.auth_gate import auth_gate_middleware
-from app.routers import admin, assistant, auth, chatchat_proxy, energy, incidents, kb, mcp_manifest, meta, sikong, stats, v2
+from app.routers import admin, assistant, auth, chatchat_proxy, energy, incidents, kb, mcp_manifest, meta, sikong, stats, v2, wo_compat, work_orders
+from app.services import energy_sync
+
+
+@asynccontextmanager
+async def _lifespan(_app: FastAPI):
+    await energy_sync.start_sync_loop()
+    yield
+    await energy_sync.stop_sync_loop()
+
 
 app = FastAPI(
     title="建筑能源智能管理 API",
     description="赛题 A08：能耗数据查询统计（时段汇总/COP 演示/异常分析）、报表导出、规范 PDF 知识库、司空语料、数据字典与运维数据摘要、可选 OpenAI 兼容 LLM 的智慧运维问答（/assistant/rag-answer）、MCP 工具清单。",
     version="0.2.3",
+    lifespan=_lifespan,
 )
 
 _cors_allow_all = "*" in settings.cors_origins
@@ -41,6 +52,9 @@ app.include_router(chatchat_proxy.router, prefix=settings.api_prefix)
 app.include_router(mcp_manifest.router, prefix=settings.api_prefix)
 app.include_router(admin.router, prefix=settings.api_prefix)
 app.include_router(incidents.router, prefix=settings.api_prefix)
+app.include_router(work_orders.router, prefix=settings.api_prefix)
+app.include_router(work_orders.technicians_router, prefix=settings.api_prefix)
+app.include_router(wo_compat.router, prefix=settings.api_prefix)
 app.include_router(v2.router, prefix=settings.api_prefix)
 
 

@@ -179,5 +179,38 @@ class Settings:
         except ValueError:
             return 24.0
 
+    @property
+    def amap_web_key(self) -> str:
+        return _env_str("AMAP_WEB_KEY", "AMAP_KEY")
+
+    # 能耗实时对接：配置 ENERGY_API_URL 后后台定时拉取并合并落盘
+    @property
+    def energy_api_url(self) -> str | None:
+        v = _env_str("ENERGY_API_URL")
+        return v or None
+
+    @property
+    def energy_api_key(self) -> str:
+        return _env_str("ENERGY_API_KEY")
+
+    @property
+    def energy_api_timeout_sec(self) -> float:
+        try:
+            return float(os.environ.get("ENERGY_API_TIMEOUT_SEC", "30"))
+        except ValueError:
+            return 30.0
+
+    @property
+    def energy_sync_interval_sec(self) -> int:
+        try:
+            return int(os.environ.get("ENERGY_SYNC_INTERVAL_SEC", "300"))
+        except ValueError:
+            return 300
+
+    @property
+    def energy_sync_on_start(self) -> bool:
+        v = os.environ.get("ENERGY_SYNC_ON_START", "true").strip().lower()
+        return v in ("1", "true", "yes", "on")
+
 
 settings = Settings()
