@@ -1,0 +1,12 @@
+# 可选：前端「上传识别」启用 YOLO-World（体积大，含 PyTorch）
+# yolov8x-worldv2 需较新 ultralytics（含资产下载与 set_classes 修复）
+#
+# YOLO-World 另需 OpenAI CLIP（否则 No module named 'clip'），任选其一安装：
+#   A) 已安装 Git：  pip install git+https://github.com/openai/CLIP.git
+#   B) 无 Git：从 https://github.com/openai/CLIP 下载 ZIP，解压后在该目录执行： pip install .
+#
+# 安装本文件（如遇 hash 校验问题可用）：python -m pip install --isolated -r requirements-v2-vision.txt
+ultralytics>=8.3.155
+ftfy>=6.0.0
+regex>=2023.0.0
+tqdm>=4.0.0
