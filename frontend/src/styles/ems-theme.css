@@ -1,0 +1,721 @@
+/* 现代简约 EMS：蓝 / 绿 / 灰 / 白，数据为主、低饱和装饰 */
+
+:root {
+  /* 灰度与表面（工业 B 端 token） */
+  --ems-text-primary: #1f2329;
+  --ems-text-regular: #4e5969;
+  --ems-text-placeholder: #86909c;
+  --ems-bg-base: #f5f7fa;
+  --ems-bg-card: #ffffff;
+  /* 工业风：浅灰底 + 细边框切分（少用阴影） */
+  --ems-border-color: #e4e7ed;
+  --ems-border-light: #e4e7ed;
+
+  --ems-space-xs: 4px;
+  --ems-space-sm: 8px;
+  --ems-space-md: 16px;
+  --ems-space-lg: 24px;
+  --ems-space-xl: 32px;
+
+  --ems-radius-sm: 4px;
+  --ems-radius-md: 4px;
+  --ems-shadow-subtle: none;
+
+  /* 侧栏深色底（略浅于纯 Ant 蓝黑，减轻压迫感） */
+  --ems-bg-dark: #1d2129;
+  --ems-blue-rgb: 24, 144, 255;
+  --ems-sidebar-bg: var(--ems-bg-dark);
+  --ems-sidebar-text: rgba(255, 255, 255, 0.65);
+  --ems-main-bg: var(--ems-bg-base);
+  --ems-surface: var(--ems-bg-card);
+  --ems-border: var(--ems-border-light);
+  --ems-text: var(--ems-text-primary);
+  --ems-text-secondary: var(--ems-text-regular);
+  --ems-text-muted: rgba(0, 0, 0, 0.25);
+
+  /* 语义色：仅用于状态与告警 */
+  --ems-blue: #1890ff;
+  /* 菜单选中浅底（与 MainLayout 左侧条配合） */
+  --ems-menu-active-bg: rgba(24, 144, 255, 0.12);
+  --ems-blue-soft: #e6f4ff;
+  --ems-green: #52c41a;
+  --ems-green-soft: #f6ffed;
+  --ems-gray: #8c8c8c;
+  --ems-warning: #faad14;
+  --ems-warning-soft: #fffbe6;
+  --ems-danger: #ff4d4f;
+  --ems-danger-soft: #fff2f0;
+
+  --ems-card-radius: var(--ems-radius-md);
+  --ems-shadow: none;
+  --ems-shadow-md: none;
+  --ems-chart-palette: #1890ff, #52c41a, #69c0ff, #95de64, #8c8c8c;
+  --ems-font-sans: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'PingFang SC', 'Hiragino Sans GB',
+    'Microsoft YaHei', 'Noto Sans SC', sans-serif;
+  /* KPI / 表格数字：等宽，减少跳动 */
+  --ems-font-number: 'Roboto Mono', 'SF Mono', ui-monospace, Monaco, 'Courier New', monospace;
+  --ems-shadow-hover: none;
+  --ems-danger-alpha: rgba(255, 77, 79, 0.1);
+  --ems-success-alpha: rgba(82, 196, 26, 0.1);
+}
+
+html {
+  /* Element Plus：工业风 4px 圆角 */
+  --el-border-radius-base: 4px;
+  --el-border-radius-small: 4px;
+  --el-color-primary: #1890ff;
+  --el-color-primary-light-3: #4ba8ff;
+  --el-color-primary-light-5: #7ec1ff;
+  --el-color-primary-light-7: #b0d9ff;
+  --el-color-primary-light-9: #e6f4ff;
+  --el-color-primary-dark-2: #096dd9;
+  --el-color-success: #52c41a;
+  --el-color-warning: #faad14;
+  --el-color-danger: #ff4d4f;
+}
+
+body {
+  background: var(--ems-main-bg) !important;
+  color: var(--ems-text);
+  font-family: var(--ems-font-sans);
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+/* 等宽数字（KPI / 表格 / 动画数字） */
+.num-font,
+.dash-kpi-num,
+.kpi-val,
+.myems-kpi-value,
+.animated-num,
+.ems-tabular,
+.el-table .cell {
+  font-family: 'Roboto Mono', var(--ems-font-number), ui-monospace, monospace;
+  font-variant-numeric: tabular-nums;
+}
+
+/* 内容区统一边距与最大宽度，大屏下留白更正式 */
+.ems-page-shell {
+  max-width: 1280px;
+  padding: 0 var(--ems-space-sm);
+  margin: 0 auto;
+  width: 100%;
+  box-sizing: border-box;
+}
+
+.ems-page-title {
+  font-size: clamp(17px, 2.5vw, 20px);
+  font-weight: 600;
+  color: var(--ems-text);
+  margin-bottom: 8px;
+}
+
+.ems-page-desc {
+  font-size: 13px;
+  color: var(--ems-text-secondary);
+  margin: 0 0 16px;
+  line-height: 1.5;
+}
+
+.ems-card {
+  border-radius: var(--ems-radius-md);
+  background: var(--ems-bg-card);
+  border: 1px solid var(--ems-border-color);
+  box-shadow: none !important;
+  transition: border-color 0.15s ease;
+}
+
+.ems-card:hover {
+  border-color: #c9cdd4;
+  box-shadow: none !important;
+}
+
+.el-card.ems-card .el-card__header {
+  padding: 12px 16px;
+  border-bottom: 1px solid var(--ems-border-light);
+  font-size: 14px;
+  font-weight: 600;
+  color: var(--ems-text-primary);
+}
+
+/* 触控友好：按钮与可点击区域不小于约 40px */
+.ems-btn-min {
+  min-height: 40px;
+  padding-left: 16px;
+  padding-right: 16px;
+}
+
+/* MyEMS 类管理页：浅灰筛选条 + 白卡片内容区 */
+.myems-page {
+  max-width: 1280px;
+  margin: 0 auto;
+  padding: 0 var(--ems-space-sm);
+  box-sizing: border-box;
+}
+
+.myems-page-title {
+  margin: 0 0 4px;
+  font-size: 18px;
+  font-weight: 600;
+  color: var(--ems-text-primary);
+}
+
+.myems-page-desc {
+  margin: 0 0 14px;
+  font-size: 13px;
+  color: var(--ems-text-regular);
+}
+
+.myems-toolbar {
+  background: #f8f9fa;
+  border: none;
+  border-bottom: 1px solid var(--ems-border-color);
+  border-radius: 0;
+  padding: 10px 16px;
+  margin: 0 calc(-1 * var(--ems-space-sm)) var(--ems-space-md);
+  width: calc(100% + 2 * var(--ems-space-sm));
+  max-width: none;
+  box-sizing: border-box;
+}
+
+.myems-toolbar--dense .el-form-item {
+  margin-bottom: 4px;
+}
+
+.myems-toolbar .el-form-item {
+  margin-bottom: 8px;
+}
+
+.myems-toolbar .el-form-item__label {
+  color: rgba(0, 0, 0, 0.55);
+  font-weight: 500;
+}
+
+.myems-toolbar--dense .el-form-item__label {
+  display: none;
+}
+
+/* 无边框数据表：仅顶线与浅行分隔 */
+.data-table--borderless.el-table {
+  --el-table-border-color: transparent;
+  --el-table-header-bg-color: #fff;
+}
+
+.data-table--borderless.el-table--border::after,
+.data-table--borderless.el-table--border::before,
+.data-table--borderless.el-table__inner-wrapper::before {
+  display: none;
+}
+
+.data-table--borderless.el-table th.el-table__cell {
+  border-bottom: 1px solid var(--ems-border-color);
+  border-right: none !important;
+  font-weight: 600;
+  color: var(--ems-text-primary);
+  background: #fafafa !important;
+}
+
+.data-table--borderless.el-table td.el-table__cell {
+  border-right: none !important;
+  border-bottom: 1px dashed rgba(228, 231, 237, 0.9);
+}
+
+.data-table--borderless.el-table .el-table__body tr:last-child td.el-table__cell {
+  border-bottom: none;
+}
+
+/* 状态标签：深色字 + 10% 同色底，无边框 */
+.ems-tag-soft {
+  border: none !important;
+  font-weight: 500;
+}
+
+.ems-tag-soft.el-tag--danger {
+  color: #a8071a;
+  background: rgba(255, 77, 79, 0.1) !important;
+}
+
+.ems-tag-soft.el-tag--warning {
+  color: #ad6800;
+  background: rgba(250, 173, 20, 0.1) !important;
+}
+
+.ems-tag-soft.el-tag--success {
+  color: #237804;
+  background: rgba(82, 196, 26, 0.1) !important;
+}
+
+.ems-tag-soft.el-tag--info {
+  color: #434343;
+  background: rgba(0, 0, 0, 0.06) !important;
+}
+
+.myems-btn-submit {
+  background-color: #52c41a !important;
+  border-color: #52c41a !important;
+  color: #fff !important;
+  min-width: 88px;
+  font-weight: 500;
+}
+
+.myems-btn-submit:hover,
+.myems-btn-submit:focus {
+  background-color: #73d13d !important;
+  border-color: #73d13d !important;
+  color: #fff !important;
+}
+
+.myems-kpi-row {
+  margin-bottom: 16px;
+}
+
+.myems-kpi-card {
+  background: #fff;
+  border: 1px solid var(--ems-border-color);
+  border-radius: var(--ems-radius-md);
+  border-left: 3px solid var(--ems-border-color);
+  padding: var(--ems-space-md) 18px;
+  min-height: 96px;
+  box-shadow: none;
+}
+
+.myems-kpi-card--accent-warn {
+  border-left-color: var(--ems-warning);
+}
+
+.myems-kpi-card--accent-danger {
+  border-left-color: var(--ems-danger);
+}
+
+.myems-kpi-label {
+  font-size: 13px;
+  color: rgba(0, 0, 0, 0.45);
+  margin-bottom: 8px;
+}
+
+.myems-kpi-value {
+  font-size: 24px;
+  font-weight: 600;
+  color: rgba(0, 0, 0, 0.85);
+  font-variant-numeric: tabular-nums;
+}
+
+.myems-kpi-unit {
+  font-size: 13px;
+  font-weight: 400;
+  margin-left: 4px;
+  color: rgba(0, 0, 0, 0.45);
+}
+
+.myems-kpi-trend {
+  margin-top: 8px;
+  font-size: 12px;
+}
+
+.myems-kpi-trend--up {
+  color: #cf1322;
+}
+
+.myems-kpi-trend--down {
+  color: #52c41a;
+}
+
+.myems-section {
+  background: #fff;
+  border: 1px solid var(--ems-border-color);
+  border-radius: var(--ems-radius-md);
+  padding: 14px var(--ems-space-md) var(--ems-space-md);
+  margin-bottom: var(--ems-space-md);
+  box-shadow: none;
+}
+
+.myems-section-head {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 12px;
+  padding-bottom: 10px;
+  border-bottom: 1px solid #f0f0f0;
+  font-size: 15px;
+  font-weight: 600;
+  color: rgba(0, 0, 0, 0.85);
+}
+
+.myems-donut-grid .chart-mini {
+  min-height: 230px;
+  height: 230px;
+}
+
+/* —— Dashboard 首屏（能力矩阵 + KPI 阵列） —— */
+.dash-container {
+  max-width: 1440px;
+  margin: 0 auto;
+  /* 外边距由 MainLayout 主内容区 padding 承担，避免双重留白 */
+  padding: 0;
+  box-sizing: border-box;
+}
+
+.dash-header-mini {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--ems-space-md);
+  margin-bottom: var(--ems-space-md);
+}
+
+.dash-title-group {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: var(--ems-space-sm);
+  min-width: 0;
+}
+
+.dash-title-group .ems-page-title {
+  margin: 0;
+}
+
+.dash-action-group {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: var(--ems-space-sm);
+}
+
+.dash-update-time {
+  font-size: 12px;
+  color: var(--ems-text-secondary);
+}
+
+.nav-matrix {
+  margin-bottom: var(--ems-space-lg);
+}
+
+/* 首页能力入口：药丸式紧凑导航（≤40px 高） */
+.dash-nav-tags {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 6px;
+  margin-bottom: 12px;
+  min-height: 36px;
+}
+
+.dash-nav-tags.dash-nav-pills .dash-nav-tag {
+  height: 30px;
+  padding: 0 12px;
+  border-radius: 999px;
+  font-weight: 400;
+  border: 1px solid var(--ems-border-color);
+  background: #fff;
+  color: var(--ems-text-regular);
+}
+
+.dash-nav-tags.dash-nav-pills .dash-nav-tag:hover {
+  border-color: var(--ems-blue);
+  color: var(--ems-blue);
+}
+
+.dash-nav-tag-ico {
+  margin-right: 4px;
+  font-size: 13px;
+  vertical-align: middle;
+}
+
+/* 驾驶舱：无缝 KPI 栅格（共用边框） */
+.dash-kpi-mosaic {
+  display: grid;
+  grid-template-columns: repeat(5, minmax(0, 1fr));
+  border: 1px solid var(--ems-border-color);
+  background: #fff;
+  margin-bottom: var(--ems-space-md);
+}
+
+.dash-kpi-mosaic .dash-kpi-card {
+  position: relative;
+  height: 100%;
+  margin: 0;
+  border: none;
+  border-radius: 0 !important;
+  border-right: 1px solid var(--ems-border-color);
+  border-bottom: 1px solid var(--ems-border-color);
+  border-left: 3px solid var(--ems-border-color);
+  box-shadow: none !important;
+}
+
+.dash-kpi-mosaic .dash-kpi-card:nth-child(5n) {
+  border-right: none;
+}
+
+.dash-kpi-mosaic .dash-kpi-card--strip-danger {
+  border-left-color: var(--ems-danger);
+}
+
+.dash-kpi-mosaic .dash-kpi-card--strip-warn {
+  border-left-color: var(--ems-warning);
+}
+
+.dash-kpi-mosaic .dash-kpi-num {
+  font-size: 28px;
+  font-weight: 600;
+}
+
+.dash-kpi-mosaic .dash-kpi-label,
+.dash-kpi-mosaic .dash-kpi-unit,
+.dash-kpi-mosaic .dash-kpi-delta {
+  font-size: 12px;
+  color: var(--ems-text-placeholder);
+}
+
+.dash-kpi-mosaic .dash-kpi-delta {
+  margin-top: 4px;
+}
+
+/* 兼容旧类名：非 mosaic 时的驾驶舱字号 */
+.dash-cockpit-row {
+  display: grid;
+  grid-template-columns: repeat(5, minmax(0, 1fr));
+  gap: 12px;
+  margin-bottom: var(--ems-space-md);
+}
+
+.dash-kpi-card--cockpit .dash-kpi-num {
+  font-size: 28px;
+}
+
+.dash-kpi-delta {
+  margin-top: 6px;
+  font-size: 11px;
+  color: var(--ems-text-placeholder);
+  font-variant-numeric: tabular-nums;
+}
+
+@media (max-width: 1200px) {
+  .dash-cockpit-row {
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+  }
+}
+
+@media (max-width: 768px) {
+  .dash-cockpit-row {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+}
+
+.nav-tile {
+  height: 100%;
+  background: var(--ems-bg-card);
+  border: 1px solid var(--ems-border-color);
+  border-radius: var(--ems-radius-md);
+  padding: var(--ems-space-md);
+  box-shadow: none;
+  transition:
+    border-color 0.2s ease,
+    box-shadow 0.2s ease;
+}
+
+.nav-tile:hover {
+  border-color: var(--ems-blue);
+  box-shadow: none;
+}
+
+.nav-tile-header {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  text-align: center;
+  gap: 4px;
+  margin-bottom: var(--ems-space-sm);
+  min-height: 44px;
+}
+
+.nav-id {
+  font-size: 11px;
+  font-weight: 600;
+  letter-spacing: 0.06em;
+  color: var(--ems-text-placeholder);
+}
+
+.nav-title {
+  font-size: 14px;
+  font-weight: 600;
+  color: var(--ems-text-primary);
+  line-height: 1.35;
+}
+
+.nav-links {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.nav-btn {
+  justify-content: flex-start;
+  width: 100%;
+  margin: 0;
+  font-weight: 400;
+}
+
+.dash-kpi-section-title {
+  margin: 0 0 var(--ems-space-sm);
+  font-size: 13px;
+  font-weight: 600;
+  color: var(--ems-text-regular);
+  letter-spacing: 0.02em;
+}
+
+.dash-kpi-grid {
+  margin-bottom: var(--ems-space-md);
+}
+
+.dash-kpi-card {
+  position: relative;
+  height: 100%;
+  background: #fff;
+  border: 1px solid var(--ems-border-color);
+  border-radius: var(--ems-radius-md);
+  padding: 14px var(--ems-space-md);
+  box-shadow: none;
+  border-left: 3px solid var(--ems-border-color);
+  transition: border-color 0.15s ease;
+}
+
+.dash-kpi-card:hover {
+  border-color: #c9cdd4;
+}
+
+/* 状态：左侧 3px 色条（非 mosaic 时与 mosaic 共用类名） */
+.dash-kpi-card--strip-danger {
+  border-left-color: var(--ems-danger);
+}
+
+.dash-kpi-card--strip-warn {
+  border-left-color: var(--ems-warning);
+}
+
+.dash-kpi-label {
+  font-size: 12px;
+  color: var(--ems-text-secondary);
+  line-height: 1.3;
+  margin-bottom: 6px;
+}
+
+.dash-kpi-value-row {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: baseline;
+  gap: 4px;
+  min-height: 32px;
+}
+
+.dash-kpi-num {
+  font-size: 24px;
+  font-weight: 600;
+  color: var(--ems-text-primary);
+  font-variant-numeric: tabular-nums;
+  line-height: 1.2;
+}
+
+.dash-kpi-unit {
+  font-size: 12px;
+  color: var(--ems-text-placeholder);
+  font-weight: 400;
+}
+
+.dash-kpi-footer {
+  margin-top: 8px;
+}
+
+.dash-kpi-status {
+  display: inline-block;
+  font-size: 12px;
+  font-weight: 500;
+  transform: scale(0.9);
+  transform-origin: left center;
+  color: var(--ems-text-secondary);
+}
+
+.dash-kpi-status.is-ok {
+  color: var(--ems-green);
+}
+
+.dash-kpi-status.is-warn {
+  color: var(--ems-warning);
+}
+
+.dash-kpi-status.is-danger {
+  color: var(--ems-danger);
+}
+
+.dash-kpi-status.is-muted {
+  color: var(--ems-text-placeholder);
+}
+
+.dash-kpi-status.is-info {
+  color: var(--ems-blue);
+}
+
+.dash-chart-row {
+  margin-top: var(--ems-space-sm);
+}
+
+.dash-about-tip {
+  max-width: 400px;
+  line-height: 1.55;
+  font-size: 12px;
+}
+
+.dash-about-tip p {
+  margin: 0 0 8px;
+}
+
+.dash-about-tip p:last-child {
+  margin-bottom: 0;
+}
+
+/* 驾驶舱图表：弱容器感，标题浮于左上 */
+.chart-surface {
+  position: relative;
+  background: #fff;
+  border: none;
+  padding: 28px 0 12px;
+  min-height: 260px;
+  box-sizing: border-box;
+}
+
+.chart-surface-title {
+  position: absolute;
+  top: 4px;
+  left: 0;
+  z-index: 1;
+  font-size: 13px;
+  font-weight: 600;
+  color: var(--ems-text-primary);
+  line-height: 1.3;
+  max-width: 92%;
+}
+
+.chart-surface-sub {
+  display: block;
+  font-size: 11px;
+  font-weight: 400;
+  color: var(--ems-text-placeholder);
+  margin-top: 2px;
+}
+
+.chart-surface-actions {
+  position: absolute;
+  top: 2px;
+  right: 0;
+  z-index: 1;
+}
+
+.dash-header-single {
+  margin-bottom: 10px;
+}
+
+.dash-header-single .ems-page-title {
+  margin: 0;
+  font-size: 18px;
+}
