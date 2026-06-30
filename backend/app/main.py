@@ -10,13 +10,16 @@ from fastapi.responses import JSONResponse
 from starlette.exceptions import HTTPException as StarletteHTTPException
 
 from app.config import settings
+from app.logging_config import configure_logging
 from app.middleware.auth_gate import auth_gate_middleware
+from app.middleware.request_log import request_log_middleware
 from app.routers import admin, assistant, auth, chatchat_proxy, energy, incidents, kb, mcp_manifest, meta, sikong, stats, v2, wo_compat, work_orders
 from app.services import energy_sync
 
 
 @asynccontextmanager
 async def _lifespan(_app: FastAPI):
+    configure_logging()
     await energy_sync.start_sync_loop()
     yield
     await energy_sync.stop_sync_loop()
@@ -40,6 +43,7 @@ app.add_middleware(
 )
 
 app.middleware("http")(auth_gate_middleware)
+app.middleware("http")(request_log_middleware)
 
 app.include_router(auth.router, prefix=settings.api_prefix)
 app.include_router(energy.router, prefix=settings.api_prefix)
