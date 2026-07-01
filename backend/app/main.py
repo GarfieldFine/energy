@@ -1,5 +1,6 @@
 from __future__ import annotations
 
+import logging
 from contextlib import asynccontextmanager
 from typing import Any
 
@@ -15,6 +16,8 @@ from app.middleware.auth_gate import auth_gate_middleware
 from app.middleware.request_log import request_log_middleware
 from app.routers import admin, assistant, auth, chatchat_proxy, energy, incidents, kb, mcp_manifest, meta, sikong, stats, v2, wo_compat, work_orders
 from app.services import energy_sync
+
+error_logger = logging.getLogger("app.error")
 
 
 @asynccontextmanager
@@ -73,7 +76,21 @@ async def custom_http_exception(request: Request, exc: StarletteHTTPException) -
                 "hint": "路径需带 /api 前缀（例：/api/energy/buildings）；访问 GET /api 查看端点列表；交互文档 /docs",
             },
         )
+    if exc.status_code >= 400:
+        error_logger.warning(
+            "HTTP %s %s %s -> %s",
+            request.method,
+            request.url.path,
+            exc.status_code,
+            exc.detail,
+        )
     return await http_exception_handler(request, exc)
+
+
+@app.exception_handler(Exception)
+async def unhandled_exception_handler(request: Request, exc: Exception) -> JSONResponse:
+    error_logger.exception("Unhandled %s %s", request.method, request.url.path)
+    return JSONResponse(status_code=500, content={"detail": "Internal Server Error"})
 
 
 @app.get(f"{settings.api_prefix}", tags=["discovery"])
